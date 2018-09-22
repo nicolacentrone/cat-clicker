@@ -1,0 +1,14 @@
+span {
+  font: normal normal 400 500%/normal "Quicksand", sans-serif;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.clicks-area {
+  text-align: center;
+  cursor: default;
+}
