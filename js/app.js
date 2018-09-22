@@ -1,7 +1,7 @@
 function click () {
   let count = 0;
 
-  return function () {
+  return () => {
     let catPic = document.querySelector(".cat-pic");
     let catPic2 = document.querySelector(".cat-pic2");
 
@@ -13,7 +13,7 @@ function click () {
       newCounter.innerHTML = count;
       document.querySelector(".number-area").appendChild(newCounter);
     }, false);
-    
+
     catPic2.addEventListener('click', () => {
       let counter = document.querySelector("span");
       counter.remove();
@@ -26,5 +26,16 @@ function click () {
 
 }
 
+function catsName () {
+  const catName1 = 'Shomi';
+  const catName2 = 'Shobi';
+
+  let titles = document.querySelectorAll('h3');
+  titles[0].innerHTML = catName1;
+  titles[1].innerHTML = catName2;
+
+}
+
 let myVar = click();
 myVar();
+catsName();
