@@ -17,17 +17,26 @@ flex-wrap: wrap;
 }
 
 .clicks-area {
-  width: 50%;
+  width: 80%;
 }
 
 .number-area {
-  width: 100%;
+  width: 80%;
 }
 
-.cat-pic,
-.cat-pic2 {
+/* .cat-pic {
   width: 80%;
   display: block;
   margin-left: auto;
   margin-right: auto;
+} */
+
+.thumb {
+  display: block;
+  width: 100%;
+  padding: 0 0 5px 0;
+}
+
+.select-bar {
+  width: 15vw;
 }
