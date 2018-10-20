@@ -44,10 +44,10 @@ function setImages(allCats) {
 }
 
 /**
-* @description
+* @description Lets the user select the cat
 * @param {array} allCats The array of cat objects
 **/
-function select() {
+function select(allCats) {
   let images = document.querySelectorAll('img');
   let clear = true;
   images.forEach((el) => {
@@ -55,29 +55,49 @@ function select() {
       if (clear === false) {
         document.querySelector('.clicks-area img').remove();
         document.querySelector('.clicks-area h3').remove();
+        document.querySelector('.clicks-area h3').remove();
         clear = true;
       }
       let src = el.src;
+
       nameTheCats(allCats);
+
+      let newH3 = document.createElement('h3');
+      let clicksArea = document.querySelector('.clicks-area');
+      clicksArea.appendChild(newH3);
+
       let newImg = document.createElement('img');
       newImg.className = 'cat-pic';
       newImg.src = src;
-      document.querySelector('.clicks-area').appendChild(newImg);
-      showClicks(allCats);
-      clear = false;
+      clicksArea.appendChild(newImg);
+
+      newH3 = document.createElement('h3');
+      newH3.setAttribute('class', 'clicks');
+      document.querySelector('.clicks-area').appendChild(newH3);
+
       let target = event.target;
+      showClicks(allCats, newH3, target);
+
+      clear = false;
       let nameSpace = document.querySelector('h3');
+
       if (target.className === 'thumb cat1') {
         nameSpace.innerHTML = allCats[0].name;
+        newImg.className = 'cat-pic cat1';
       } else if (target.className === 'thumb cat2') {
         nameSpace.innerHTML = allCats[1].name;
+        newImg.className = 'cat-pic cat2';
       } else if (target.className === 'thumb cat3') {
         nameSpace.innerHTML = allCats[2].name;
+        newImg.className = 'cat-pic cat3';
       } else if (target.className === 'thumb cat4') {
         nameSpace.innerHTML = allCats[3].name;
+        newImg.className = 'cat-pic cat4';
       } else if (target.className === 'thumb cat5') {
         nameSpace.innerHTML = allCats[4].name;
+        newImg.className = 'cat-pic cat5';
       }
+      clicker(allCats);
     }, false);
   });
 }
@@ -85,13 +105,16 @@ function select() {
 /**
 * @description Creates the number of clicks
 * @param {array} allCats The array of cat objects
+* @param {document} clicksNum DOM element H3
+* @param {document} target The element that has been clicked
 **/
-function showClicks(allCats) {
-  let clicksNum = document.createElement('h3');
-  document.querySelector('.clicks-area').appendChild(clicksNum);
-  allCats.forEach((el) => {
-    clicksNum.innerHTML = el.clicks;
-  }, false);
+function showClicks(allCats, clicksNum, target) {
+  let className = target.className;
+  for (let i = 0; i < 5; i++) {
+    if (className === 'thumb' + ' ' + 'cat' + (i+1)) {
+      clicksNum.innerHTML = allCats[i].clicks;
+    }
+  }
 }
 
 /**
@@ -107,6 +130,31 @@ function nameTheCats(allCats) {
   }, false);
 }
 
+/**
+* @description Increases the number of clicks when the selected cat is clicked
+* @param {array} allCats The array of cat objects
+**/
+function clicker(allCats) {
+  let img = document.querySelector('img.cat-pic');
+  img.addEventListener('click', () => {
+    let target = event.target;
+    for (let n = 1; n < 6; n++) {
+      if (target.className === 'cat-pic cat' + n) {
+        allCats[n-1].increaseClick();
+        /* Updating the number of clicks on the screen */
+        let clicks = document.querySelector('.clicks');
+        clicks.remove();
+        let newNumber = allCats[n-1].clicks;
+        clicks = document.createElement('h3');
+        clicks.setAttribute('class', 'clicks');
+        clicks.innerHTML = newNumber;
+        let clicksArea = document.querySelector('.clicks-area');
+        clicksArea.appendChild(clicks);
+      }
+    }
+  });
+}
+
 let allCats = setCatsUrl();
 setImages(allCats);
-select();
+select(allCats);
