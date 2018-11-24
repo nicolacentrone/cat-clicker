@@ -1,165 +1,121 @@
-let Cat = function(url, name) {
-  this.imageUrl = url;
-  this.name = name;
-  this.clicks = 0;
-};
+$(function() {
+  let Cat = function(url, name) {
+    this.imageUrl = url;
+    this.name = name;
+    this.clicks = 0;
+  };
 
-Cat.prototype.setPictureUrl = function(n) {
-  const url = 'img/cat-pic';
-  this.imageUrl = url+(n+1) + '.jpg';
-};
+  let model = {
 
-Cat.prototype.increaseClick = function() {
-  this.clicks += 1;
-};
+    imageUrl: '',
+    name: '',
+    clicks: 0,
+    cats: [],
+  };
 
-/**
-* @description Instantiates 5 cat objects and push them into an array
-* @return {array} An array of objects containing 5 cats objects
-**/
-function setCatsUrl() {
-  let catArray = [];
-  for (let i = 0; i < 5; i++) {
-    let cat = new Cat();
-    catArray.push(cat);
-    cat.setPictureUrl(i);
-  }
-  return catArray;
-}
+  let octopus = {
 
-/**
-* @description Creates a link in the DOM for every object in the allCats array
-* @param {array} allCats The array of cat objects
-**/
-function setNames(allCats) {
-  nameTheCats(allCats);
-  let bar = document.querySelector('.select-bar');
-  let i = 1;
-  allCats.forEach((el) => {
-    let link = document.createElement('a');
-    link.style.cursor = 'pointer';
-    link.innerHTML = el.name;
-    link.className = 'thumb' + ' ' + 'cat' + i;
-    bar.appendChild(link);
-    i++;
-  });
-}
+    init: function() {
+      let catsArray = this.setCatsUrl(model.cats);
+      octopus.nameTheCats(catsArray);
+    },
 
-/**
-* @description Let the user select the cat
-* @param {array} allCats The array of cat objects
-**/
-function select(allCats) {
-  let links = document.querySelectorAll('a');
-  let clear = true;
-  links.forEach((el) => {
-    el.addEventListener('click', () => {
-      let target = event.target;
+    setPictureUrl: function(n, cat) {
+      const url = 'img/cat-pic';
+      cat.imageUrl = url + (n+1) + '.jpg';
+      return cat;
+    },
 
-      if (clear === false) {
-        document.querySelector('.clicks-area h3').remove();
-        document.querySelector('.clicks-area img').remove();
-        document.querySelector('.clicks-area h3').remove();
-        clear = true;
+    setCatsUrl: function(catsArray) {
+      for (let i = 0; i < 5; i++) {
+        let cat = new Cat();
+        cat = this.setPictureUrl(i, cat);
+        catsArray.push(cat);
       }
+      return catsArray;
+    },
 
-      let newH3 = document.createElement('h3');
-      let clicksArea = document.querySelector('.clicks-area');
-      clicksArea.appendChild(newH3);
+    nameTheCats: function(catsArray) {
+      const catNames = ['Shomi', 'Shobi', 'Bim', 'Bum', 'Bam'];
+      let i = 0;
+      catsArray.forEach((el) => {
+        el.name = catNames[i];
+        i++;
+      }, false);
+      view.renderNames(catsArray);
+    },
 
-      let newImg = document.createElement('img');
-      newImg.className = 'cat-pic';
-      clicksArea.appendChild(newImg);
+    addListeners: function(catsArray) {
+      let clear = true;
+      $('a').each(function(index) {
+        $(this).on('click', function(e) {
+          console.log('hit!');
+          let target = event.target;
 
-      newH3 = document.createElement('h3');
-      newH3.setAttribute('class', 'clicks');
-      document.querySelector('.clicks-area').appendChild(newH3);
+          if (clear === false) {
+            $('.clicks-area h3').remove();
+            $('.clicks-area img').remove();
+            $('.clicks-area h3').remove();
+          }
 
-      showClicks(allCats, newH3, target);
+          $('.clicks-area').append('<h3 class=cats-name></h3>');
+          $('.clicks-area').append('<img class="cat-pic"></img>');
+          $('.clicks-area').append('<h3 class="clicks"></h3>');
 
-      clear = false;
+          octopus.setClicks(catsArray, model.clicks, target);
 
-      let nameSpace = document.querySelector('h3');
+          clear = false;
 
-      if (target.className === 'thumb cat1') {
-        nameSpace.innerHTML = allCats[0].name;
-        newImg.className = 'cat-pic cat1';
-        newImg.src = allCats[0].imageUrl;
-      } else if (target.className === 'thumb cat2') {
-        nameSpace.innerHTML = allCats[1].name;
-        newImg.className = 'cat-pic cat2';
-        newImg.src = allCats[1].imageUrl;
-      } else if (target.className === 'thumb cat3') {
-        nameSpace.innerHTML = allCats[2].name;
-        newImg.className = 'cat-pic cat3';
-        newImg.src = allCats[2].imageUrl;
-      } else if (target.className === 'thumb cat4') {
-        nameSpace.innerHTML = allCats[3].name;
-        newImg.className = 'cat-pic cat4';
-        newImg.src = allCats[3].imageUrl;
-      } else if (target.className === 'thumb cat5') {
-        nameSpace.innerHTML = allCats[4].name;
-        newImg.className = 'cat-pic cat5';
-        newImg.src = allCats[4].imageUrl;
+          view.updateCatInfo(target, catsArray);
+        });
+      });
+    },
+
+    setClicks: function(catsArray, clicksNum, target) {
+      let className = target.className;
+      for (let i = 1; i < 5; i++) {
+        if (className === 'thumb' + ' ' + 'cat' + (i)) {
+          clicksNum.innerHTML = catsArray[i].clicks;
+        }
       }
-      clicker(allCats);
-    }, false);
-  });
-}
+    },
+  };
 
-/**
-* @description Creates the number of clicks
-* @param {array} allCats The array of cat objects
-* @param {document} clicksNum DOM element H3
-* @param {document} target The element that has been clicked
-**/
-function showClicks(allCats, clicksNum, target) {
-  let className = target.className;
-  for (let i = 0; i < 5; i++) {
-    if (className === 'thumb' + ' ' + 'cat' + (i+1)) {
-      clicksNum.innerHTML = allCats[i].clicks;
-    }
-  }
-}
+  let view = {
 
-/**
-* @description Gives the attribute name to all the cats objects
-* @param {array} allCats The array of cat objects
-**/
-function nameTheCats(allCats) {
-  const catName = ['Shomi', 'Shobi', 'Bim', 'Bum', 'Bam'];
-  let i = 0;
-  allCats.forEach((el) => {
-    el.name = catName[i];
-    i++;
-  }, false);
-}
+    renderNames: function(catsArray) {
+      let bar = $('.select-bar');
+      let i = 1;
+      catsArray.forEach((el) => {
+        let link = document.createElement('a');
+        link.style.cursor = 'pointer';
+        link.innerHTML = el.name;
+        link.className = 'thumb' + ' ' + 'cat' + i;
+        bar.append(link);
+        i++;
+      });
+      octopus.addListeners(catsArray);
+    },
 
-/**
-* @description Increases the number of clicks when the selected cat is clicked
-* @param {array} allCats The array of cat objects
-**/
-function clicker(allCats) {
-  let img = document.querySelector('img.cat-pic');
-  img.addEventListener('click', () => {
-    let target = event.target;
-    for (let n = 1; n < 6; n++) {
-      if (target.className === 'cat-pic cat' + n) {
-        allCats[n-1].increaseClick();
-        /* Updating the number of clicks on the screen */
-        let clicks = document.querySelector('.clicks');
-        clicks.remove();
-        let newNumber = allCats[n-1].clicks;
-        clicks = document.createElement('h3');
-        clicks.setAttribute('class', 'clicks');
-        clicks.innerHTML = newNumber;
-        let clicksArea = document.querySelector('.clicks-area');
-        clicksArea.appendChild(clicks);
+    clear: function() {
+      $('.clicks-area h3').html('');
+      $('.clicks-area img').html('');
+      $('.clicks-area h3').html('');
+    },
+
+    updateCatInfo: function(target, catsArray) {
+      debugger;
+      let nameSpace = $('.cats-name');
+      for (let i = 1; i <= catsArray.length; i++) {
+        if (target.className === 'thumb cat'+[i]) {
+          nameSpace.text(catsArray[i-1].name);
+          $('.cat-pic').attr('class', 'cat-pic cat'+[i]);
+          $('.cat-pic').attr('src', catsArray[i-1].imageUrl);
+          console.log(catsArray[i].clicks);
+        }
       }
-    }
-  });
-}
+    },
+  };
 
-let allCats = setCatsUrl();
-setNames(allCats);
-select(allCats);
+  octopus.init();
+}());
