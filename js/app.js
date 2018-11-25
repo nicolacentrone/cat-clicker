@@ -49,7 +49,6 @@ $(function() {
       let clear = true;
       $('a').each(function(index) {
         $(this).on('click', function(e) {
-          console.log('hit!');
           let target = event.target;
 
           if (clear === false) {
@@ -62,22 +61,27 @@ $(function() {
           $('.clicks-area').append('<img class="cat-pic"></img>');
           $('.clicks-area').append('<h3 class="clicks"></h3>');
 
-          octopus.setClicks(catsArray, model.clicks, target);
+          octopus.setClicks(catsArray, target);
 
           clear = false;
-
           view.updateCatInfo(target, catsArray);
+          view.clicker(catsArray);
         });
       });
     },
 
-    setClicks: function(catsArray, clicksNum, target) {
-      let className = target.className;
-      for (let i = 1; i < 5; i++) {
-        if (className === 'thumb' + ' ' + 'cat' + (i)) {
-          clicksNum.innerHTML = catsArray[i].clicks;
+    setClicks: function(catsArray, target) {
+      debugger;
+      for (let i = 1; i <= catsArray.length; i++) {
+        if (target.className === 'thumb' + ' ' + 'cat' + i) {
+          $('.clicks').text(catsArray[i].clicks);
         }
       }
+    },
+
+    increaseClick: function(catsArray, i) {
+      catsArray[i].clicks +=1;
+      return catsArray;
     },
   };
 
@@ -97,23 +101,30 @@ $(function() {
       octopus.addListeners(catsArray);
     },
 
-    clear: function() {
-      $('.clicks-area h3').html('');
-      $('.clicks-area img').html('');
-      $('.clicks-area h3').html('');
-    },
-
     updateCatInfo: function(target, catsArray) {
-      debugger;
       let nameSpace = $('.cats-name');
       for (let i = 1; i <= catsArray.length; i++) {
         if (target.className === 'thumb cat'+[i]) {
           nameSpace.text(catsArray[i-1].name);
           $('.cat-pic').attr('class', 'cat-pic cat'+[i]);
           $('.cat-pic').attr('src', catsArray[i-1].imageUrl);
-          console.log(catsArray[i].clicks);
         }
       }
+    },
+
+    clicker: function(catsArray) {
+      $('.cat-pic').on('click', function(e) {
+        let target = event.target;
+        for (let i = 1; i < catsArray.length; i++) {
+          if (target.className === 'cat-pic cat'+[i]) {
+            octopus.increaseClick(catsArray, i);
+            let clicks = $('.clicks');
+            clicks.text('');
+            let newNum = catsArray[i].clicks;
+            clicks.text(newNum);
+          }
+        }
+      });
     },
   };
 
