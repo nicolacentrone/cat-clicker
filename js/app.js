@@ -8,9 +8,8 @@ $(function() {
   let model = {
     cats: [],
 
-    increaseClicks: function(cats, i) {
-      cats[i].clicks +=1;
-      return cats;
+    increaseClicks: function(i) {
+      this.cats[i].clicks +=1;
     },
 
   };
@@ -19,6 +18,10 @@ $(function() {
 
     getCats: function() {
       return model.cats;
+    },
+
+    getIncreasedClicks: function(i) {
+      return model.increaseClicks(i);
     },
 
     init: function() {
@@ -101,6 +104,7 @@ $(function() {
       let clicksArea = $('.clicks-area');
       clicksArea.append('<h3 class=cats-name></h3>');
       clicksArea.append('<img class="cat-pic"></img>');
+      debugger;
       clicksArea.append('<h3 class="clicks"></h3>');
     },
 
@@ -127,7 +131,7 @@ $(function() {
         let cats = octopus.getCats();
         cats.forEach((el) => {
           if (target.className === 'cat-pic cat' + i) {
-            model.increaseClicks(cats, i-1);  // view non può chiamare model
+            octopus.getIncreasedClicks(i-1);  // view non può chiamare model
             let clicks = $('.clicks');
             clicks.text('');
             let newNum = cats[i-1].clicks;
@@ -139,6 +143,5 @@ $(function() {
     },
   };
 
-  debugger;
   octopus.init();
 }());
