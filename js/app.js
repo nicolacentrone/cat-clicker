@@ -6,127 +6,135 @@ $(function() {
   };
 
   let model = {
-
-    imageUrl: '',
-    name: '',
-    clicks: 0,
     cats: [],
+
+    increaseClicks: function(allCats, i) {
+      allCats[i].clicks +=1;
+      return allCats;
+    },
+
   };
 
   let octopus = {
 
     init: function() {
-      let catsArray = this.setCatsUrl(model.cats);
-      octopus.nameTheCats(catsArray);
+      let allCats = this.createCatObjects(model.cats);
+      allCats = this.setPictureUrl(allCats);
+      allCats = this.giveCatsName(allCats);
+      view.renderSelectBar(allCats);
+      this.addListenersToNames(allCats);
     },
 
-    setPictureUrl: function(n, cat) {
-      const url = 'img/cat-pic';
-      cat.imageUrl = url + (n+1) + '.jpg';
-      return cat;
-    },
-
-    setCatsUrl: function(catsArray) {
+    createCatObjects: function(modelCats) {
       for (let i = 0; i < 5; i++) {
         let cat = new Cat();
-        cat = this.setPictureUrl(i, cat);
-        catsArray.push(cat);
+        modelCats.push(cat);
       }
-      return catsArray;
+      return modelCats;
     },
 
-    nameTheCats: function(catsArray) {
+    setPictureUrl: function(allCats) {
+      let i = 1;
+      allCats.forEach((el) => {
+        const url = 'img/cat-pic';
+        el.imageUrl = url + i + '.jpg';
+        i++;
+      }, false);
+      return allCats;
+    },
+
+    giveCatsName: function(allCats) {
       const catNames = ['Shomi', 'Shobi', 'Bim', 'Bum', 'Bam'];
       let i = 0;
-      catsArray.forEach((el) => {
+      allCats.forEach((el) => {
         el.name = catNames[i];
         i++;
       }, false);
-      view.renderNames(catsArray);
+      return allCats;
     },
 
-    addListeners: function(catsArray) {
+    addListenersToNames: function(allCats) {
       let clear = true;
-      $('a').each(function(index) {
+      let init = true;
+      $('ul').each(function(index) {
         $(this).on('click', function(e) {
           let target = event.target;
 
           if (clear === false) {
-            $('.clicks-area h3').remove();
-            $('.clicks-area img').remove();
-            $('.clicks-area h3').remove();
+            view.clear();
           }
-
-          $('.clicks-area').append('<h3 class=cats-name></h3>');
-          $('.clicks-area').append('<img class="cat-pic"></img>');
-          $('.clicks-area').append('<h3 class="clicks"></h3>');
-
-          octopus.setClicks(catsArray, target);
-
+          if (init === true) {
+            view.renderInit();
+            view.clicker(allCats);
+          }
+          init = false;
+          view.render(allCats, target);
           clear = false;
-          view.updateCatInfo(target, catsArray);
-          view.clicker(catsArray);
         });
       });
-    },
-
-    setClicks: function(catsArray, target) {
-      debugger;
-      for (let i = 1; i <= catsArray.length; i++) {
-        if (target.className === 'thumb' + ' ' + 'cat' + i) {
-          $('.clicks').text(catsArray[i].clicks);
-        }
-      }
-    },
-
-    increaseClick: function(catsArray, i) {
-      catsArray[i].clicks +=1;
-      return catsArray;
     },
   };
 
   let view = {
 
-    renderNames: function(catsArray) {
+    renderSelectBar: function(allCats) {
       let bar = $('.select-bar');
       let i = 1;
-      catsArray.forEach((el) => {
-        let link = document.createElement('a');
+      allCats.forEach((el) => {
+        let link = document.createElement('ul');
         link.style.cursor = 'pointer';
         link.innerHTML = el.name;
-        link.className = 'thumb' + ' ' + 'cat' + i;
+        link.className = 'name' + ' ' + 'cat' + i;
         bar.append(link);
         i++;
       });
-      octopus.addListeners(catsArray);
     },
 
-    updateCatInfo: function(target, catsArray) {
+    clear: function() {
+      $('.clicks-area h3').text('');
+      $('.cat-pic').attr('src', '');
+    },
+
+    renderInit: function() {
+      let clicksArea = $('.clicks-area');
+      clicksArea.append('<h3 class=cats-name></h3>');
+      clicksArea.append('<img class="cat-pic"></img>');
+      clicksArea.append('<h3 class="clicks"></h3>');
+    },
+
+    render: function(allCats, target) {
       let nameSpace = $('.cats-name');
-      for (let i = 1; i <= catsArray.length; i++) {
-        if (target.className === 'thumb cat'+[i]) {
-          nameSpace.text(catsArray[i-1].name);
-          $('.cat-pic').attr('class', 'cat-pic cat'+[i]);
-          $('.cat-pic').attr('src', catsArray[i-1].imageUrl);
+      let catPic = $('.cat-pic');
+      let i = 1;
+      allCats.forEach((el) => {
+        if (target.className === 'name cat' + i) {
+          $('.clicks').text(allCats[i-1].clicks);
+          nameSpace.text(allCats[i-1].name);
+          catPic.attr('class', 'cat-pic cat' + i);
+          catPic.attr('src', allCats[i-1].imageUrl);
         }
-      }
+        i++;
+      });
     },
 
-    clicker: function(catsArray) {
+    clicker: function(allCats) {
       $('.cat-pic').on('click', function(e) {
         let target = event.target;
-        for (let i = 1; i < catsArray.length; i++) {
-          if (target.className === 'cat-pic cat'+[i]) {
-            octopus.increaseClick(catsArray, i);
+        let i = 1;
+        allCats.forEach((el) => {
+          if (target.className === 'cat-pic cat' + i) {
+            model.increaseClicks(allCats, i-1);
             let clicks = $('.clicks');
             clicks.text('');
-            let newNum = catsArray[i].clicks;
+            let newNum = allCats[i-1].clicks;
             clicks.text(newNum);
           }
-        }
+          i++;
+        });
       });
     },
   };
 
+  debugger;
   octopus.init();
 }());
