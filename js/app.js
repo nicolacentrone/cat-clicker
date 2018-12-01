@@ -8,52 +8,53 @@ $(function() {
   let model = {
     cats: [],
 
-    increaseClicks: function(allCats, i) {
-      allCats[i].clicks +=1;
-      return allCats;
+    increaseClicks: function(cats, i) {
+      cats[i].clicks +=1;
+      return cats;
     },
 
   };
 
   let octopus = {
 
-    init: function() {
-      let allCats = this.createCatObjects(model.cats);
-      allCats = this.setPictureUrl(allCats);
-      allCats = this.giveCatsName(allCats);
-      view.renderSelectBar(allCats);
-      this.addListenersToNames(allCats);
+    getCats: function() {
+      return model.cats;
     },
 
-    createCatObjects: function(modelCats) {
+    init: function() {
+      this.createCatObjects();
+      this.setPictureUrl();
+      this.giveCatsName();
+      view.renderSelectBar();
+      this.addListenersToNames();
+    },
+
+    createCatObjects: function() {
       for (let i = 0; i < 5; i++) {
         let cat = new Cat();
-        modelCats.push(cat);
+        model.cats.push(cat);
       }
-      return modelCats;
     },
 
-    setPictureUrl: function(allCats) {
+    setPictureUrl: function() {
       let i = 1;
-      allCats.forEach((el) => {
+      model.cats.forEach((el) => {
         const url = 'img/cat-pic';
         el.imageUrl = url + i + '.jpg';
         i++;
       }, false);
-      return allCats;
     },
 
-    giveCatsName: function(allCats) {
+    giveCatsName: function() {
       const catNames = ['Shomi', 'Shobi', 'Bim', 'Bum', 'Bam'];
       let i = 0;
-      allCats.forEach((el) => {
+      model.cats.forEach((el) => {
         el.name = catNames[i];
         i++;
       }, false);
-      return allCats;
     },
 
-    addListenersToNames: function(allCats) {
+    addListenersToNames: function() {
       let clear = true;
       let init = true;
       $('ul').each(function(index) {
@@ -65,10 +66,10 @@ $(function() {
           }
           if (init === true) {
             view.renderInit();
-            view.clicker(allCats);
+            view.clicker();
           }
           init = false;
-          view.render(allCats, target);
+          view.render(target);
           clear = false;
         });
       });
@@ -77,10 +78,11 @@ $(function() {
 
   let view = {
 
-    renderSelectBar: function(allCats) {
+    renderSelectBar: function() {
       let bar = $('.select-bar');
       let i = 1;
-      allCats.forEach((el) => {
+      let cats = octopus.getCats();
+      cats.forEach((el) => {
         let link = document.createElement('ul');
         link.style.cursor = 'pointer';
         link.innerHTML = el.name;
@@ -102,31 +104,33 @@ $(function() {
       clicksArea.append('<h3 class="clicks"></h3>');
     },
 
-    render: function(allCats, target) {
+    render: function(target) {
       let nameSpace = $('.cats-name');
       let catPic = $('.cat-pic');
       let i = 1;
-      allCats.forEach((el) => {
+      let cats = octopus.getCats();
+      cats.forEach((el) => {
         if (target.className === 'name cat' + i) {
-          $('.clicks').text(allCats[i-1].clicks);
-          nameSpace.text(allCats[i-1].name);
+          $('.clicks').text(cats[i-1].clicks);
+          nameSpace.text(cats[i-1].name);
           catPic.attr('class', 'cat-pic cat' + i);
-          catPic.attr('src', allCats[i-1].imageUrl);
+          catPic.attr('src', cats[i-1].imageUrl);
         }
         i++;
       });
     },
 
-    clicker: function(allCats) {
+    clicker: function() {
       $('.cat-pic').on('click', function(e) {
         let target = event.target;
         let i = 1;
-        allCats.forEach((el) => {
+        let cats = octopus.getCats();
+        cats.forEach((el) => {
           if (target.className === 'cat-pic cat' + i) {
-            model.increaseClicks(allCats, i-1);
+            model.increaseClicks(cats, i-1);  // view non può chiamare model
             let clicks = $('.clicks');
             clicks.text('');
-            let newNum = allCats[i-1].clicks;
+            let newNum = cats[i-1].clicks;
             clicks.text(newNum);
           }
           i++;
