@@ -3,11 +3,38 @@ span {
 }
 
 h3 {
+  height: 3vw;
   font: normal normal 400 200%/normal "Quicksand", sans-serif;
 }
 
 ul {
   padding-left: 0;
+}
+
+input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.b-controls__input-name--hidden,
+.b-controls__input-url--hidden,
+.b-controls__input-clicks--hidden,
+.b-controls__button-save--hidden,
+.b-controls__button-cancel--hidden {
+  visibility: hidden;
+}
+
+.b-controls__input-name,
+.b-controls__input-url,
+.b-controls__input-clicks,
+.b-controls__button-save,
+.b-controls__button-cancel {
+  visibility: visible;
+}
+
+.b-controls {
+  margin-top: 3vw;
+  width: 10%;
 }
 
 .frame {
@@ -21,7 +48,7 @@ flex-wrap: wrap;
 }
 
 .clicks-area {
-  width: 70%;
+  width: 50%;
 }
 
 .number-area {
@@ -29,7 +56,7 @@ flex-wrap: wrap;
 }
 
 .cat-pic {
-  width: 80%;
+  width: 50%;
   display: block;
   margin-left: auto;
   margin-right: auto;

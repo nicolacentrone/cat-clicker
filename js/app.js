@@ -106,6 +106,7 @@ $(function() {
 
           // starts to render the right info for the ul you clicked
           view.render(target);
+          view.renderControls();
           clear = false;
         });
       });
@@ -175,6 +176,21 @@ $(function() {
         });
       });
     },
+
+    renderControls: function() {
+      $('.b-controls__button').on('click', function(e) {
+        let name = $('.b-controls__input-name--hidden');
+        let url = $('.b-controls__input-url--hidden');
+        let clicks = $('.b-controls__input-clicks--hidden');
+        let save = $('.b-controls__button-save--hidden');
+        let cancel = $('.b-controls__button-cancel--hidden');
+        name.attr('class', 'b-controls__input-name');
+        url.attr('class', 'b-controls__input-url');
+        clicks.attr('class', 'b-controls__input-clicks');
+        save.attr('class', 'b-controls__button-save');
+        cancel.attr('class', 'b-controls__button-cancel');
+      });
+    }
   };
 
   octopus.init();
