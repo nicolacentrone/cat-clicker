@@ -29,7 +29,6 @@ $(function() {
       this.setPictureUrl();
       this.giveCatsName();
       view.renderSelectBar();
-      this.addListenersToNames();
     },
 
     createCatObjects: function() {
@@ -56,6 +55,9 @@ $(function() {
         i++;
       }, false);
     },
+  };
+
+  let view = {
 
     addListenersToNames: function() {
       let clear = true;
@@ -77,9 +79,6 @@ $(function() {
         });
       });
     },
-  };
-
-  let view = {
 
     renderSelectBar: function() {
       let bar = $('.select-bar');
