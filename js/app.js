@@ -16,11 +16,7 @@ $(function() {
   */
   let model = {
     cats: [],
-
-    increaseClicks: function(i) {
-      this.cats[i].clicks +=1;
-    },
-
+    currentCat: null,
   };
 
   /**
@@ -35,10 +31,18 @@ $(function() {
       return model.cats;
     },
 
+    setCurrentCat: function(catCopy) {
+      return model.currentCat = catCopy;
+    },
+
+    getCurrentCat: function() {
+      return model.currentCat;
+    },
+
     /* returns the increaseClicks function, because the view can't access it
     directly */
-    getIncreasedClicks: function(i) {
-      return model.increaseClicks(i);
+    getIncreasedClicks: function(cat) {
+      return cat.clicks++;
     },
 
     /* kickstarts the code */
@@ -86,30 +90,35 @@ $(function() {
     addListenersToNames: function() {
       let clear = true;
       let init = true;
-      $('ul').each(function(index) {
-        $(this).on('click', function(e) {
-          let target = event.target;
+      let cats = octopus.getCats();
+      let uls = document.querySelectorAll('ul');
+      let cat;
+      for (let i = 0; i < cats.length; i++) {
+        cat = cats[i];
+        uls[i].addEventListener('click', (function(catCopy) {
+          return function() {
+            octopus.setCurrentCat(catCopy);
+            /* we don't want to clear the screen if it's the first time we
+            render it */
+            if (clear === false) {
+              view.clear();
+            }
+            /* it starts the first time you run the app. We don't want to create
+            the DOM structure every time. Because the structure stays the same
+            but only the contents gets cleaned */
+            if (init === true) {
+              view.renderInit(); // ok, make the structure
+              view.clicker(); // add the listeners
+            }
+            init = false;
 
-          /* we don't want to clear the screen if it's the first time we render
-          it */
-          if (clear === false) {
-            view.clear();
-          }
-          /* it starts the first time you run the app. We don't want to create
-          the DOM structure every time. Because the structure stays the same
-          but only the contents gets cleaned */
-          if (init === true) {
-            view.renderInit(); // ok, make the structure
-            view.clicker(); // add the listeners
-          }
-          init = false;
-
-          // starts to render the right info for the ul you clicked
-          view.render(target);
-          view.renderControls();
-          clear = false;
-        });
-      });
+            // starts to render the right info for the ul you clicked
+            view.render();
+            view.renderControls();
+            clear = false;
+          };
+        })(cat));
+      };
     },
 
     /* prints the list of cat names (ul) and adds the class names */
@@ -118,11 +127,11 @@ $(function() {
       let i = 1;
       let cats = octopus.getCats();
       cats.forEach((el) => {
-        let link = document.createElement('ul');
-        link.style.cursor = 'pointer';
-        link.innerHTML = el.name;
-        link.className = 'name' + ' ' + 'cat' + i;
-        bar.append(link);
+        let ul = document.createElement('ul');
+        ul.style.cursor = 'pointer';
+        ul.innerHTML = el.name;
+        ul.className = 'name' + ' ' + 'cat' + i;
+        bar.append(ul);
         i++;
       });
     },
@@ -138,42 +147,30 @@ $(function() {
       let clicksArea = $('.clicks-area');
       clicksArea.append('<h3 class=cats-name></h3>');
       clicksArea.append('<img class="cat-pic"></img>');
+      debugger;
       clicksArea.append('<h3 class="clicks"></h3>');
     },
 
     /* render the right info of the target cat*/
-    render: function(target) {
+    render: function() {
+      let cat = octopus.getCurrentCat();
       let nameSpace = $('.cats-name');
       let catPic = $('.cat-pic');
-      let i = 1;
-      let cats = octopus.getCats();
-      cats.forEach((el) => {
-        if (target.className === 'name cat' + i) {
-          $('.clicks').text(cats[i-1].clicks);
-          nameSpace.text(cats[i-1].name);
-          catPic.attr('class', 'cat-pic cat' + i);
-          catPic.attr('src', cats[i-1].imageUrl);
-        }
-        i++;
-      });
+
+      $('.clicks').text(cat.clicks);
+      nameSpace.text(cat.name);
+      catPic.attr('class', 'cat-pic');
+      catPic.attr('src', cat.imageUrl);
     },
 
     /* increases the clicks of the target cat */
     clicker: function() {
+      debugger;
       $('.cat-pic').on('click', function(e) {
-        let target = event.target;
-        let i = 1;
-        let cats = octopus.getCats();
-        cats.forEach((el) => {
-          if (target.className === 'cat-pic cat' + i) {
-            octopus.getIncreasedClicks(i-1);
-            let clicks = $('.clicks');
-            clicks.text('');
-            let newNum = cats[i-1].clicks;
-            clicks.text(newNum);
-          }
-          i++;
-        });
+        let cat = octopus.getCurrentCat();
+        let clicks = cat.clicks +=1;
+        let clicksArea = $('.clicks');
+        clicksArea.text(clicks);
       });
     },
 
@@ -190,8 +187,8 @@ $(function() {
         save.attr('class', 'b-controls__button-save');
         cancel.attr('class', 'b-controls__button-cancel');
       });
-    }
+    },
   };
-
+  debugger;
   octopus.init();
 }());
