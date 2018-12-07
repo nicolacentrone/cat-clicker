@@ -102,6 +102,7 @@ $(function() {
     addListenersToNames: function() {
       let clear = true;
       let init = true;
+      let adminMode = false;
       let cats = octopus.getCats();
       let uls = document.querySelectorAll('ul');
       let cat;
@@ -124,9 +125,14 @@ $(function() {
             }
             init = false;
 
-            // starts to render the right info for the ul you clicked
             view.render();
-            view.renderControls();
+            //  starts to render the right info for the ul you clicked
+            if (adminMode === false) {
+              view.renderControlsInit();
+              adminMode = true;
+            } else {
+              view.renderControls();
+            }
             clear = false;
           };
         })(cat));
@@ -167,24 +173,25 @@ $(function() {
       let cat = octopus.getCurrentCat();
       let nameSpace = $('.cats-name');
       let catPic = $('.cat-pic');
+      let clicks = $('.clicks');
 
-      $('.clicks').text(cat.clicks);
+      clicks.text(cat.clicks);
       nameSpace.text(cat.name);
-      catPic.attr('class', 'cat-pic');
       catPic.attr('src', cat.imageUrl);
+      catPic.attr('class', 'cat-pic');
     },
 
     /* increases the clicks of the target cat */
     clicker: function() {
       $('.cat-pic').on('click', function(e) {
         let cat = octopus.getCurrentCat();
-        let clicks = cat.clicks +=1;
+        cat.clicks ++;
         let clicksArea = $('.clicks');
-        clicksArea.text(clicks);
+        clicksArea.text(cat.clicks);
       });
     },
 
-    renderControls: function() {
+    renderControlsInit: function() {
       let cat = octopus.getCurrentCat();
       $('.b-controls__button').on('click', function(e) {
         let name = $('.b-controls__input-name--hidden');
@@ -212,11 +219,48 @@ $(function() {
 
           let c = clicks.val();
           octopus.setCatClicks(c);
+
           view.render();
+          view.clearSelectBar();
+          view.renderSelectBar();
+          view.hideControls();
         });
 
         cancel.attr('class', 'b-controls__button-cancel');
+        cancel.on('click', function() {
+          view.hideControls();
+        });
       });
+    },
+
+    renderControls: function() {
+      let cat = octopus.getCurrentCat();
+      let name = $('.b-controls__input-name');
+      let url = $('.b-controls__input-url');
+      let clicks = $('.b-controls__input-clicks');
+
+      clicks.val(cat.clicks);
+      name.val(cat.name);
+      url.val(cat.imageUrl);
+    },
+
+    hideControls: function() {
+      let name = $('.b-controls__input-name');
+      let url = $('.b-controls__input-url');
+      let clicks = $('.b-controls__input-clicks');
+      let save = $('.b-controls__button-save');
+      let cancel = $('.b-controls__button-cancel');
+
+      name.attr('class', 'b-controls__input-name--hidden');
+      url.attr('class', 'b-controls__input-url--hidden');
+      clicks.attr('class', 'b-controls__input-clicks--hidden');
+      save.attr('class', 'b-controls__button-save--hidden');
+      cancel.attr('class', 'b-controls__button-cancel--hidden');
+    },
+
+    clearSelectBar: function() {
+      let uls = $('ul');
+      uls.remove();
     },
   };
   octopus.init();
