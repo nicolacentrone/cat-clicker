@@ -165,7 +165,6 @@ $(function() {
 
     /* increases the clicks of the target cat */
     clicker: function() {
-      debugger;
       $('.cat-pic').on('click', function(e) {
         let cat = octopus.getCurrentCat();
         let clicks = cat.clicks +=1;
@@ -175,20 +174,27 @@ $(function() {
     },
 
     renderControls: function() {
+      let cat = octopus.getCurrentCat();
       $('.b-controls__button').on('click', function(e) {
         let name = $('.b-controls__input-name--hidden');
         let url = $('.b-controls__input-url--hidden');
         let clicks = $('.b-controls__input-clicks--hidden');
         let save = $('.b-controls__button-save--hidden');
         let cancel = $('.b-controls__button-cancel--hidden');
+
         name.attr('class', 'b-controls__input-name');
+        name.val(cat.name);
+
         url.attr('class', 'b-controls__input-url');
+        url.val(cat.imageUrl);
+
         clicks.attr('class', 'b-controls__input-clicks');
+        clicks.val(cat.clicks);
+
         save.attr('class', 'b-controls__button-save');
         cancel.attr('class', 'b-controls__button-cancel');
       });
     },
   };
-  debugger;
   octopus.init();
 }());
