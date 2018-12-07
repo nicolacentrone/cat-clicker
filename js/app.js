@@ -81,6 +81,18 @@ $(function() {
         i++;
       }, false);
     },
+
+    setCatName: function(input) {
+      model.currentCat.name = input;
+    },
+
+    setCatUrl: function(input) {
+      model.currentCat.imageUrl = input;
+    },
+
+    setCatClicks: function(input) {
+      model.currentCat.clicks = input;
+    },
   };
 
   /* behaves like a DOM updater, it can't access the model directly */
@@ -147,7 +159,6 @@ $(function() {
       let clicksArea = $('.clicks-area');
       clicksArea.append('<h3 class=cats-name></h3>');
       clicksArea.append('<img class="cat-pic"></img>');
-      debugger;
       clicksArea.append('<h3 class="clicks"></h3>');
     },
 
@@ -192,6 +203,18 @@ $(function() {
         clicks.val(cat.clicks);
 
         save.attr('class', 'b-controls__button-save');
+        save.on('click', function() {
+          let n = name.val();
+          octopus.setCatName(n);
+
+          let u = url.val();
+          octopus.setCatUrl(u);
+
+          let c = clicks.val();
+          octopus.setCatClicks(c);
+          view.render();
+        });
+
         cancel.attr('class', 'b-controls__button-cancel');
       });
     },
