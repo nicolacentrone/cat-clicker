@@ -17,6 +17,7 @@ $(function() {
   let model = {
     cats: [],
     currentCat: null,
+    adminMode: false,
   };
 
   /**
@@ -31,10 +32,6 @@ $(function() {
       return model.cats;
     },
 
-    setCurrentCat: function(catCopy) {
-      return model.currentCat = catCopy;
-    },
-
     getCurrentCat: function() {
       return model.currentCat;
     },
@@ -45,12 +42,24 @@ $(function() {
       return cat.clicks++;
     },
 
+    getAdminMode: function() {
+      return model.adminMode;
+    },
+
+    setCurrentCat: function(catCopy) {
+      return model.currentCat = catCopy;
+    },
+
+    setAdminMode: function(mode) {
+      return model.adminMode = mode;
+    },
+
     /* kickstarts the code */
     init: function() {
       this.createCatObjects();
       this.setPictureUrl();
       this.giveCatsName();
-      view.renderSelectBar();
+      view.renderSelectBarInit();
       view.addListenersToNames();
     },
 
@@ -102,7 +111,6 @@ $(function() {
     addListenersToNames: function() {
       let clear = true;
       let init = true;
-      let adminMode = false;
       let cats = octopus.getCats();
       let uls = document.querySelectorAll('ul');
       let cat;
@@ -127,9 +135,9 @@ $(function() {
 
             view.render();
             //  starts to render the right info for the ul you clicked
-            if (adminMode === false) {
+            let admin = octopus.getAdminMode();
+            if (admin === false) {
               view.renderControlsInit();
-              adminMode = true;
             } else {
               view.renderControls();
             }
@@ -139,8 +147,7 @@ $(function() {
       };
     },
 
-    /* prints the list of cat names (ul) and adds the class names */
-    renderSelectBar: function() {
+    renderSelectBarInit: function() {
       let bar = $('.select-bar');
       let i = 1;
       let cats = octopus.getCats();
@@ -150,6 +157,17 @@ $(function() {
         ul.innerHTML = el.name;
         ul.className = 'name' + ' ' + 'cat' + i;
         bar.append(ul);
+        i++;
+      });
+    },
+
+    /* prints the list of cat names (ul) and adds the class names */
+    renderSelectBar: function() {
+      let i = 0;
+      let cats = octopus.getCats();
+      let uls = $('ul');
+      cats.forEach((el) => {
+        uls[i].innerHTML = el.name;
         i++;
       });
     },
@@ -194,6 +212,10 @@ $(function() {
     renderControlsInit: function() {
       let cat = octopus.getCurrentCat();
       $('.b-controls__button').on('click', function(e) {
+        view.renderControls();
+        let admin = true;
+        octopus.setAdminMode(admin);
+
         let name = $('.b-controls__input-name--hidden');
         let url = $('.b-controls__input-url--hidden');
         let clicks = $('.b-controls__input-clicks--hidden');
@@ -211,6 +233,9 @@ $(function() {
 
         save.attr('class', 'b-controls__button-save');
         save.on('click', function() {
+          let admin = false;
+          octopus.setAdminMode(admin);
+
           let n = name.val();
           octopus.setCatName(n);
 
@@ -228,6 +253,8 @@ $(function() {
 
         cancel.attr('class', 'b-controls__button-cancel');
         cancel.on('click', function() {
+          let admin = false;
+          octopus.setAdminMode(admin);
           view.hideControls();
         });
       });
@@ -260,7 +287,7 @@ $(function() {
 
     clearSelectBar: function() {
       let uls = $('ul');
-      uls.remove();
+      uls.text('');
     },
   };
   octopus.init();
